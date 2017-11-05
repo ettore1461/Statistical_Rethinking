@@ -1,0 +1,51 @@
+---
+title: "Capitolo 5"
+output: html_notebook
+---
+
+```{r 5.1}
+library(rethinking)
+data("WaffleDivorce")
+d <- WaffleDivorce
+
+d$MedianAgeMarriage.s <- scale(d$MedianAgeMarriage) # standize data
+
+m5.1 <- map(
+  alist(
+    Divorce ~ dnorm(mu,sigma),
+    mu <- a+bA*MedianAgeMarriage.s,
+    a ~dnorm(10,10),
+    bA~dnorm(0,1),
+    sigma~dunif(0,10)
+  ), data = d
+)
+```
+
+```{r 5.2}
+MAM.seq <- seq(from=-3,to=3.5,length.out = 30)
+mu <- link(m5.1,data = data.frame(MedianAgeMarriage.s=MAM.seq))
+mu.PI <- apply(mu,2,PI)
+
+plot(Divorce~MedianAgeMarriage.s,data=d,col=rangi2)
+abline(m5.1)
+shade(mu.PI,MAM.seq)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
